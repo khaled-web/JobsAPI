@@ -5,7 +5,7 @@ const express = require('express');
 const app = express();
 
 //connectDB
-
+const connect = require('./db/connect')
 //routers
 const authRouters = require('./routes/auth');
 const jobsRouters = require('./routes/jobs')
@@ -15,6 +15,7 @@ const jobsRouters = require('./routes/jobs')
 const notFoundMiddleware = require('./middleware/not-found');
 // incase of...There are an error
 const errorHandlerMiddleware = require('./middleware/error-handler');
+const connectDB = require('./db/connect');
 //middleware...to use req.body
 app.use(express.json());
 // extra packages
@@ -35,6 +36,7 @@ const port = process.env.PORT || 7000;
 
 const start = async () => {
   try {
+    await connectDB(process.env.MONGO_URI)
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );
