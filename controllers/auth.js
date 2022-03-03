@@ -4,9 +4,28 @@ const User = require('../models/User')
 const {
  StatusCodes
 } = require('http-status-codes');
+//importing BadRequestErrors 
+const {
+ BadRequestError
+} = require('../errors');
+//activatePasswordPackage
+const bcrypt = require('bcryptjs');
+
+
 
 //RegisterFunction
 const register = async (req, res) => {
+ const {
+  name,
+  email,
+  password
+ } = req.body;
+
+ //errorChecking
+ if (!name || !email || !password) {
+  throw new BadRequestError('please provide name, email, password');
+ }
+
  const user = await User.create({
   ...req.body
  });

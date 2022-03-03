@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-
+//password_package
+const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
  name: {
@@ -20,8 +21,15 @@ const UserSchema = new mongoose.Schema({
   type: String,
   required: [true, 'please provide password'],
   minLength: 6,
-  maxLength: 12
+  // maxLength: 12 //we will remove this property for hashingPassword_bcryptjs-package
  }
 })
 
+//saving the userData(name,email,password) 
+UserSchema.pre('save', async function () {
+ //hashing the password
+ const salt = await bcrypt.genSalt(10);
+ this.password = await bcrypt.hash(this.password, salt);
+});
+//exporting schemaModel
 module.exports = mongoose.model('User', UserSchema);
