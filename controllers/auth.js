@@ -8,9 +8,6 @@ const {
 const {
  BadRequestError
 } = require('../errors');
-//activatePasswordPackage
-const bcrypt = require('bcryptjs');
-
 
 
 //RegisterFunction
@@ -26,11 +23,21 @@ const register = async (req, res) => {
   throw new BadRequestError('please provide name, email, password');
  }
 
+ //start creating the user from "schemaModel_User"
  const user = await User.create({
   ...req.body
  });
- res.status(StatusCodes.CREATED).json(user); //statusCode_201
+
+ const token = user.createJWT();
+
+ res.status(StatusCodes.CREATED).json({
+  user: {
+   name: user.name,
+  },
+  token
+ }); //statusCode_201
 }
+
 
 //LoginFunction
 const login = async (req, res) => {

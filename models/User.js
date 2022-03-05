@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 //password_package
 const bcrypt = require('bcryptjs');
+//activate "JWT-package"
+const jwt = require('jsonwebtoken')
 
 const UserSchema = new mongoose.Schema({
  name: {
@@ -31,5 +33,19 @@ UserSchema.pre('save', async function () {
  const salt = await bcrypt.genSalt(10);
  this.password = await bcrypt.hash(this.password, salt);
 });
+
+// assign a function to the "methods" object of our UserSchema
+UserSchema.methods.createJWT = function () {
+ //installing jwt
+ return jwt.sign({
+  userId: this._id, //payload for JWT
+  name: this.name
+ }, process.env.JWT_SECRET, {
+  expiresIn: process.env.JWT_LIFETIME
+ })
+}
+
+
+
 //exporting schemaModel
 module.exports = mongoose.model('User', UserSchema);
