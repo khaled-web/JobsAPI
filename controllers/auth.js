@@ -6,8 +6,10 @@ const {
 } = require('http-status-codes');
 //importing BadRequestErrors 
 const {
- BadRequestError
+ BadRequestError,
+ UnauthenticatedError
 } = require('../errors');
+
 
 
 //RegisterFunction
@@ -41,7 +43,35 @@ const register = async (req, res) => {
 
 //LoginFunction
 const login = async (req, res) => {
- res.send('login user');
+ const {
+  email,
+  password
+ } = req.body;
+
+ if (!email || !password) {
+  throw new BadRequestError('Please provide email, password');
+ }
+
+ const user = await User.findOne({
+  email
+ });
+
+ //check on user
+ if (!user) {
+  throw new UnauthenticatedError('Invalid Credentials')
+ }
+ //check on password
+ const isPasswordCorrect = await user.comparePassword(password)
+ if (isPasswordCorrect) { // the correct... if(!isPasswordCorrect)
+  throw new UnauthenticatedError('Invalid Credentials')
+ }
+ const token = user.createJWT();
+ res.status(StatusCodes.OK).json({
+  user: {
+   name: user.name,
+  },
+  token
+ })
 }
 
 //exporting the controllers_functions
