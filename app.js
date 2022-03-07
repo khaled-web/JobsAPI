@@ -5,7 +5,9 @@ const express = require('express');
 const app = express();
 
 //connectDB
-const connect = require('./db/connect')
+const connectDB = require('./db/connect');
+//importingMiddlewareAuthentication
+const authenticateUser = require('./middleware/authentication')
 //routers
 const authRouters = require('./routes/auth');
 const jobsRouters = require('./routes/jobs')
@@ -15,7 +17,6 @@ const jobsRouters = require('./routes/jobs')
 const notFoundMiddleware = require('./middleware/not-found');
 // incase of...There are an error
 const errorHandlerMiddleware = require('./middleware/error-handler');
-const connectDB = require('./db/connect');
 //middleware...to use req.body
 app.use(express.json());
 // extra packages
@@ -23,7 +24,7 @@ app.use(express.json());
 // Activate authRouters
 app.use('/domain/api/v1/auth', authRouters);
 //Activate jobsRouters
-app.use('/domain/api/v1/jobs', jobsRouters);
+app.use('/domain/api/v1/jobs', authenticateUser, jobsRouters);
 // app.use('/domain/api/v1/jobs/:id', jobsRouters)
 
 
